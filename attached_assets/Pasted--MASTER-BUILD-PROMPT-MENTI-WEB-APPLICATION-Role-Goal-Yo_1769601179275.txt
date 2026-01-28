@@ -1,0 +1,357 @@
+🔹 MASTER BUILD PROMPT — MENTI WEB APPLICATION
+Role & Goal
+
+You are a senior full-stack engineer and system architect tasked with building a production-correct, anonymous mental-health peer support web application called MENTI.
+
+Your goal is to design and implement a 1-to-1 anonymous real-time chat system that is:
+
+ethically designed
+
+privacy-first
+
+deterministic
+
+glitch-free
+
+deployable on free tiers
+
+architecturally sound
+
+The system must eliminate undefined behavior, even at the cost of strictness.
+
+Product Philosophy (CRITICAL)
+
+This is not a social app and not a messaging clone.
+
+MENTI exists to support people dealing with:
+
+anxiety
+
+depression
+
+addiction relapse
+
+loneliness
+
+emotional overwhelm
+
+The platform must:
+
+avoid identity
+
+avoid permanence
+
+avoid public exposure
+
+avoid surveillance
+
+avoid algorithmic manipulation
+
+Every interaction is:
+
+anonymous
+
+temporary
+
+single-use
+
+consent-driven
+
+When a conversation ends, it must truly end.
+
+Core Feature Scope (ONLY THIS FOR NOW)
+1-to-1 Anonymous Conversations
+
+Do not implement group chat, therapy dashboards, analytics, or storage.
+
+Focus exclusively on making 1-to-1 perfect and unbreakable.
+
+User Flow (MANDATORY)
+
+User lands on home page
+
+User selects 1-to-1 conversation
+
+User selects intent:
+
+Listen
+
+Talk
+
+Both
+
+User enters a waiting state
+
+Backend matches two compatible users
+
+Backend creates a single-use session
+
+Users are redirected to:
+
+/room/{sessionId}
+
+
+Users exchange messages in real time
+
+If either user:
+
+exits
+
+refreshes
+
+disconnects
+→ the session ends permanently
+
+No reconnection.
+No history.
+No reuse.
+
+Matching Rules (NON-NEGOTIABLE)
+
+Each user declares capability:
+
+Choice	Can Talk	Can Listen
+Listen	❌	✅
+Talk	✅	❌
+Both	✅	✅
+
+A match is valid only if:
+
+at least one user can talk
+
+at least one user can listen
+
+Prevent:
+
+talk + talk
+
+listen + listen
+
+Architecture Requirements
+Frontend
+
+Next.js (App Router)
+
+Client components only where needed
+
+Clean, calm UI
+
+No business logic
+
+No assumptions about state
+
+Reacts only to backend events
+
+Backend
+
+Node.js
+
+Socket.IO
+
+Single instance (free-tier deployable)
+
+Event-driven
+
+Backend is the only authority
+
+Matchmaking Engine
+
+Explicit state machine
+
+Deterministic logic
+
+Single source of truth
+
+In-memory store (Redis-ready interface)
+
+No race conditions
+
+No duplicate joins
+
+No ghost sessions
+
+State Machine (STRICT)
+
+Each socket is always in exactly one state:
+
+IDLE → WAITING → MATCHED → ACTIVE → ENDED
+
+
+Rules:
+
+No skipping states
+
+No multiple states
+
+Illegal events are ignored or rejected
+
+All transitions are validated server-side
+
+Session Rules (CRITICAL)
+
+Sessions are single-use
+
+Session IDs are unguessable
+
+Session existence is validated by backend
+
+URL access without valid session → reject
+
+Refreshing /room/{sessionId} after end → redirect
+
+Sessions cannot be recreated or resumed
+
+Backend Authority Rules
+
+Frontend must never:
+
+create sessions
+
+assume sessions exist
+
+decide who can join
+
+handle reconnection logic
+
+Backend must:
+
+validate session ownership
+
+validate user state
+
+validate every message
+
+enforce lifecycle rules
+
+Disconnect & Failure Handling
+
+Explicitly define behavior for:
+
+disconnect while waiting → remove user
+
+disconnect during session → end session
+
+refresh → treated as new user
+
+duplicate join attempts → ignored
+
+stale session URL → rejected
+
+No silent fallbacks.
+
+UI Requirements
+
+The UI must feel:
+
+calm
+
+human
+
+safe
+
+intentional
+
+Avoid:
+
+pure black
+
+flashing loaders
+
+“stuck” states
+
+confusing transitions
+
+Chat UI must include:
+
+clear waiting screen
+
+clear active chat
+
+clear session ended screen
+
+exit button
+
+“I need help” affordance (non-functional placeholder is fine)
+
+Privacy & Ethics
+
+No user accounts
+
+No usernames
+
+No message storage
+
+No tracking of content
+
+No profiling
+
+No analytics on conversations
+
+Explicitly do not:
+
+diagnose
+
+treat
+
+replace professional care
+
+Deployment Constraints
+
+The system must be:
+
+deployable on free tiers
+
+single backend instance
+
+WebSocket compatible
+
+no Redis dependency at runtime
+
+Redis-ready by design (future upgrade)
+
+Output Expectations
+
+Generate:
+
+Backend code (engine, socket layer, server)
+
+Frontend code (Next.js pages & components)
+
+Clear separation of concerns
+
+Comments explaining why, not just what
+
+No unnecessary features
+
+No placeholders that affect logic
+
+Final Instruction
+
+Do not optimize for speed of development.
+Optimize for:
+
+correctness
+
+predictability
+
+explainability
+
+emotional safety
+
+If a decision trades convenience for correctness, choose correctness.
+
+Success Criteria
+
+The system is successful if:
+
+two users always match correctly
+
+sessions never ghost
+
+refresh never causes undefined behavior
+
+no user can accidentally rejoin a dead session
+
+the system fails safely and clearly
+
+Build MENTI accordingly.

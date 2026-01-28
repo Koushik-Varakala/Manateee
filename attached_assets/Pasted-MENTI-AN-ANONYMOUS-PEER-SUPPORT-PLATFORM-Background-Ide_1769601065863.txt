@@ -1,0 +1,365 @@
+MENTI – AN ANONYMOUS PEER SUPPORT PLATFORM
+Background & Ideation Journey
+
+The idea for this project originated from a simple but deeply human observation: many people struggling with mental health issues hesitate to seek help, not because help doesn’t exist, but because of fear — fear of judgment, exposure, permanence, or being misunderstood.
+
+While professional therapy is essential, there exists a large gap before people reach that stage:
+
+moments of relapse
+
+emotional overwhelm
+
+loneliness
+
+anxiety
+
+addiction triggers
+
+the need to talk right now, without commitment or identity
+
+Existing platforms often fail here because they are:
+
+identity-heavy (profiles, usernames, history)
+
+permanent (messages stored forever)
+
+socially exposed (followers, likes, timelines)
+
+or clinically intimidating
+
+The core question that guided the project was:
+
+What if there existed a safe, anonymous, temporary space where two people could simply talk — or listen — without judgment, history, or identity?
+
+That question became the foundation of MENTI.
+
+Core Idea
+
+MENTI is an anonymous, real-time peer support platform designed primarily for people dealing with:
+
+depression
+
+anxiety
+
+addiction relapse
+
+emotional distress
+
+loneliness
+
+mental fatigue
+
+The platform focuses on human connection before diagnosis, enabling users to either:
+
+talk about what they are going through
+
+listen and support someone else
+
+or be open to either role
+
+There are no profiles, no names, no history, no followers, no stored chats.
+
+Every interaction is:
+
+anonymous
+
+temporary
+
+disposable
+
+consent-driven
+
+The system is designed so that when a conversation ends, it truly ends.
+
+Hackathon Alignment & Problem Fit
+
+The idea strongly aligns with mental-health-focused problem statements such as:
+
+peer-based support systems
+
+relapse prevention
+
+emotion regulation
+
+anonymous group and 1-1 interventions
+
+ethical, non-surveillance-based mental health tech
+
+Rather than diagnosing or replacing therapy, the platform explicitly positions itself as:
+
+a support layer
+
+a bridge before professional help
+
+a human-first, low-barrier entry point
+
+Product Scope (What We Are Building)
+Phase 1 (Current Focus – 1-1 Chat)
+
+The first and most critical feature is a 1-to-1 anonymous conversation system.
+
+User Flow (1-1)
+
+User enters the platform (no login)
+
+User chooses 1-1 conversation
+
+User chooses their intent:
+
+Listen
+
+Talk
+
+Both
+
+User is placed into a waiting state
+
+The system matches two compatible users
+
+A single-use session is created
+
+Both users are redirected to:
+
+/room/{sessionId}
+
+
+Users exchange messages in real time
+
+If either user exits or disconnects:
+
+the session ends
+
+both users are removed
+
+the session is permanently destroyed
+
+There is no reconnection, no chat history, and no reuse of session IDs.
+
+Matching Philosophy
+
+Instead of simplistic random matching, the system uses intent-aware pairing.
+
+Intent Rules
+
+Each user declares a capability:
+
+Choice	Can Talk	Can Listen
+Listen	❌	✅
+Talk	✅	❌
+Both	✅	✅
+
+A match is allowed only if:
+
+at least one person can talk
+
+at least one person can listen
+
+This prevents:
+
+two people who both want to talk
+
+two people who both want to listen
+
+emotionally unproductive sessions
+
+Key Design Principles
+1. Backend is the Authority
+
+The frontend never assumes state.
+Every critical decision is validated by the backend:
+
+session existence
+
+user membership
+
+session validity
+
+lifecycle transitions
+
+2. Explicit State Machine
+
+Each user exists in exactly one state at all times:
+
+IDLE
+
+WAITING
+
+MATCHED
+
+ACTIVE
+
+ENDED
+
+Illegal transitions are ignored or rejected.
+
+This eliminates:
+
+race conditions
+
+phantom sessions
+
+re-entry bugs
+
+UI desynchronization
+
+3. Single-Use Sessions
+
+Sessions are:
+
+created once
+
+used once
+
+destroyed permanently
+
+Refreshing a page or reopening a tab never resurrects a session.
+
+4. URL-Bound Truth
+
+The route /room/{sessionId} is not cosmetic.
+It is a hard reference validated by the backend.
+If the session does not exist → access is denied.
+
+5. Privacy by Design
+
+No accounts
+
+No identifiers
+
+No storage of messages
+
+No analytics on content
+
+No replay
+
+Technical Architecture
+Frontend
+
+Next.js (App Router)
+
+Client components only where needed
+
+Dumb UI, reactive to backend events
+
+No business logic on client
+
+Backend
+
+Node.js + Socket.IO
+
+Single deployable instance (free-tier friendly)
+
+Real-time event-driven communication
+
+Strict separation between:
+
+socket transport layer
+
+matchmaking engine
+
+state store
+
+Matchmaking Engine
+
+In-memory authoritative store
+
+Deterministic matching
+
+Atomic operations (single event loop)
+
+Redis-ready interface (future scalability)
+
+Why No Database (Yet)
+
+Matchmaking is ephemeral, not persistent
+
+Using a database introduces latency and race complexity
+
+Single-instance in-memory logic is more correct for real-time pairing
+
+The system is intentionally designed so Redis can replace memory later without rewriting logic
+
+What We Built So Far
+
+Full 1-1 anonymous matchmaking system
+
+Intent-aware pairing logic
+
+Single-use session lifecycle
+
+Backend-validated session URLs
+
+Strict disconnect handling
+
+UI with:
+
+waiting state
+
+active chat
+
+session ended state
+
+Clear exit and safety affordances
+
+We also encountered and resolved:
+
+hydration mismatches
+
+socket race conditions
+
+double joins
+
+phantom waiting loops
+
+invalid refresh behavior
+
+backend authority violations
+
+Each fix strengthened the architecture rather than patching symptoms.
+
+Why We Are Building This
+
+Because not everyone needs therapy immediately, but many people need:
+
+to be heard
+
+to not feel alone
+
+to talk without being remembered
+
+to listen and feel useful
+
+to exist without identity for a moment
+
+MENTI is built to respect the emotional fragility of that moment.
+
+What Comes Next (Planned, Not Yet Built)
+
+Group support sessions (AA/NA-style rooms)
+
+Therapist / professional spaces (separate from peer chat)
+
+Content sharing by professionals (videos, posts, blogs)
+
+Scalable backend with Redis (when needed)
+
+Moderation & safety escalation (human-first)
+
+Deployment polish and monitoring
+
+Final Philosophy
+
+This project is not about features.
+It is about eliminating undefined behavior in both code and human interaction.
+
+Every design decision — from single-use sessions to backend authority — exists to ensure:
+
+predictability
+
+safety
+
+privacy
+
+emotional respect
+
+MENTI is not finished — but it is correctly designed.
