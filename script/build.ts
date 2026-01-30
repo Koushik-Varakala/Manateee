@@ -47,7 +47,7 @@ async function buildAll() {
   try {
     const { spawn } = await import("child_process");
     await new Promise<void>((resolve, reject) => {
-      const p = spawn("sh", ["-c", "cd moodist-main && npm install --include=dev && npm run build"], {
+      const p = spawn("sh", ["-c", "cd moodist-main && npm ci --include=dev --no-audit --prefer-offline && npm run build"], {
         stdio: "inherit",
         shell: true,
       });
