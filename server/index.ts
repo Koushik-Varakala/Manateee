@@ -2,8 +2,14 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { setupAuth } from "./auth";
+import path from "path";
+
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+const sessionMiddleware = setupAuth(app);
 const httpServer = createServer(app);
 
 declare module "http" {
@@ -60,7 +66,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  await registerRoutes(httpServer, app);
+  await registerRoutes(httpServer, app, sessionMiddleware);
+
+  // Serve Moodist Sub-Application
+  // We resolve from __dirname which is likely /server or /dist/server. 
+  // In dev: server/index.ts -> __dirname = code/server. moodist = code/moodist-main
+  // In prod: likely built? Assuming we run tsx in dev.
+  const moodistDist = path.resolve(process.cwd(), "moodist-main", "dist");
+  app.use("/moodist", express.static(moodistDist));
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -89,15 +102,8 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+  const port = parseInt(process.env.PORT || "5001", 10);
+  httpServer.listen(port, () => {
+    log(`serving on port ${port}`);
+  });
 })();

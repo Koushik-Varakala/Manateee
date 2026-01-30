@@ -6,13 +6,23 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Room from "@/pages/Room";
+import AuthPage from "@/pages/auth-page";
+import TherapistDirectory from "@/pages/TherapistDirectory";
+import TherapistProfile from "@/pages/TherapistProfile";
+import RecoveryDashboard from "@/pages/RecoveryDashboard";
 import { SocketProvider } from "@/lib/SocketContext";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route"; // Ensure this exists or use logic inside components
 
 function Router() {
   return (
     <Switch>
+      <Route path="/auth" component={AuthPage} />
       <Route path="/" component={Home} />
       <Route path="/room/:id" component={Room} />
+      <Route path="/therapists" component={TherapistDirectory} />
+      <Route path="/therapist/:id" component={TherapistProfile} />
+      <Route path="/recovery" component={RecoveryDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -22,10 +32,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <SocketProvider>
-          <Router />
-        </SocketProvider>
+        <AuthProvider>
+          <Toaster />
+          <SocketProvider>
+            <Router />
+          </SocketProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

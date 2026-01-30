@@ -1,0 +1,42 @@
+:root {
+  /* Mapped to Menti-Support Light Green / Sage Theme */
+
+  /* Background: Menti --accent (170 35% 94%) -> #ECF6F4 (Light Sage) */
+  --color-neutral-50: #ECF6F4;
+
+  /* Surface/Cards: Slightly lighter or white */
+  --color-neutral-100: #FFFFFF;
+
+  /* Borders/Separators:  */
+  --color-neutral-200: #D1E0DE;
+
+  /* UI Elements/Inputs: */
+  --color-neutral-300: #DAE8E6;
+
+  /* Secondary Text: Muted Green/Slate */
+  --color-neutral-400: #7A9994;
+
+  /* Subtler Text */
+  --color-neutral-500: #5C7A75;
+
+  /* Subtle Text */
+  --color-neutral-600: #4A635F;
+
+  /* Main Text: Dark Slate/Green Mix */
+  --color-neutral-700: #2C3E3B;
+
+  /* Headings */
+  --color-neutral-800: #1A2624;
+  --color-neutral-900: #111A18;
+  --color-neutral-950: #0B1110;
+
+  /* Foreground Mapping */
+
+  --color-foreground: #2C3E3B;
+  /* Dark Slate Green */
+  --color-foreground-subtle: #5C7A75;
+  /* Medium Sage */
+  --color-foreground-subtler: #7A9994;
+  /* Light Sage Text */
+
+}

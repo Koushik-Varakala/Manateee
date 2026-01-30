@@ -6,12 +6,13 @@ interface ChatBubbleProps {
   content: string;
   sender: 'me' | 'partner' | 'system';
   timestamp: Date;
+  senderName?: string;
 }
 
-export function ChatBubble({ content, sender, timestamp }: ChatBubbleProps) {
+export function ChatBubble({ content, sender, timestamp, senderName }: ChatBubbleProps) {
   if (sender === 'system') {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex justify-center my-4"
@@ -36,10 +37,13 @@ export function ChatBubble({ content, sender, timestamp }: ChatBubbleProps) {
     >
       <div className={cn(
         "max-w-[80%] md:max-w-[70%] px-6 py-4 shadow-sm",
-        isMe 
-          ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm" 
+        isMe
+          ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm"
           : "bg-white text-foreground border border-border/50 rounded-2xl rounded-tl-sm"
       )}>
+        {!isMe && senderName && (
+          <p className="text-xs font-bold text-primary mb-1">{senderName}</p>
+        )}
         <p className="text-base leading-relaxed whitespace-pre-wrap font-sans">
           {content}
         </p>

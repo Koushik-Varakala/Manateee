@@ -6,42 +6,45 @@
 
 :root {
   /* 
-    Theme: Calm, Safe, Reassuring
-    Palette: Soft Sage, Lavender, Warm Slate
+    Theme: The Manatee
+    Vibe: Calm, Cool, Soft, Friendly
+    Palette: Ocean Mist, Slate, Lavender, Seafoam
   */
-  
+
   --font-sans: 'DM Sans', sans-serif;
   --font-display: 'Outfit', sans-serif;
 
-  /* Base - Warm Off-White */
-  --background: 40 20% 98%; 
-  --foreground: 220 20% 25%; /* Soft slate, not harsh black */
+  /* Base - Cool Ocean Mist (was Warm Off-White) */
+  --background: 210 20% 98%;
+  --foreground: 215 25% 27%;
+  /* Soft Ocean Slate */
 
-  /* Primary - Calming Teal/Sage */
-  --primary: 170 35% 45%;
+  /* Primary - Deep Calm Blue */
+  --primary: 200 40% 40%;
   --primary-foreground: 0 0% 100%;
 
-  /* Secondary - Gentle Lavender */
-  --secondary: 250 25% 92%;
-  --secondary-foreground: 250 20% 30%;
+  /* Secondary - Soft Lavender Mist */
+  --secondary: 260 30% 90%;
+  --secondary-foreground: 260 20% 30%;
 
-  /* Muted - Soft Grays */
-  --muted: 220 10% 94%;
-  --muted-foreground: 220 10% 55%;
+  /* Muted - Cool Greys */
+  --muted: 210 15% 94%;
+  --muted-foreground: 215 15% 55%;
 
-  /* Accents */
-  --accent: 170 35% 94%; /* Light sage for hover states */
-  --accent-foreground: 170 40% 30%;
+  /* Accents - Seafoam / Manatee Sage */
+  --accent: 160 30% 90%;
+  --accent-foreground: 160 40% 30%;
 
-  /* Destructive - Muted Rose (not angry red) */
+  /* Destructive - Muted Coral */
   --destructive: 0 40% 70%;
   --destructive-foreground: 0 50% 30%;
 
-  --border: 220 10% 90%;
-  --input: 220 10% 90%;
-  --ring: 170 35% 45%;
+  --border: 210 15% 90%;
+  --input: 210 15% 90%;
+  --ring: 200 40% 40%;
 
-  --radius: 1rem;
+  /* Radius: Chunky and Soft */
+  --radius: 1.5rem;
 }
 
 @layer base {
@@ -50,7 +53,12 @@
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply font-bold tracking-tight text-foreground/90;
   }
@@ -60,7 +68,7 @@
   .glass-panel {
     @apply bg-white/60 backdrop-blur-md border border-white/50 shadow-lg shadow-black/5;
   }
-  
+
   .text-balance {
     text-wrap: balance;
   }
@@ -69,9 +77,11 @@
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
   }
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30;
   }

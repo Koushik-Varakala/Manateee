@@ -1,6 +1,10 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile } from "fs/promises";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -37,6 +41,26 @@ async function buildAll() {
 
   console.log("building client...");
   await viteBuild();
+
+  console.log("building moodist...");
+  // Install and build moodist-main
+  try {
+    const { spawn } = await import("child_process");
+    await new Promise<void>((resolve, reject) => {
+      const p = spawn("sh", ["-c", "cd moodist-main && npm install --include=dev && npm run build"], {
+        stdio: "inherit",
+        shell: true,
+      });
+      p.on("close", (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`Moodist build failed with code ${code}`));
+      });
+      p.on("error", reject);
+    });
+  } catch (err) {
+    console.error("Failed to build moodist:", err);
+    throw err;
+  }
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));

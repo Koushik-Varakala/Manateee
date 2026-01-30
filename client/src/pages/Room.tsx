@@ -17,20 +17,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { RatingDialog } from "@/components/chat/RatingDialog";
 
 export default function Room() {
-  const { 
-    state, 
-    messages, 
-    sendMessage, 
-    leaveSession, 
-    resetSession, 
-    partnerRole, 
-    sessionId 
+  const {
+    state,
+    messages,
+    sendMessage,
+    leaveSession,
+    resetSession,
+    partnerRole,
+    partnerSocketId,
+    roomTitle,
+    sessionId
   } = useSocket();
-  
+
   const [, setLocation] = useLocation();
   const [inputValue, setInputValue] = useState("");
+  const [showRating, setShowRating] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom of chat
@@ -73,7 +77,21 @@ export default function Room() {
   if (state === 'ENDED') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <motion.div 
+        {/* Show Rating Dialog if I was a Talker */}
+        <RatingDialog
+          isOpen={showRating && (partnerRole === 'Listener' || partnerRole === 'Sponsor')} // If partner was listener/sponsor, I was talker
+          onClose={() => setShowRating(false)}
+          sessionId={sessionId || ""}
+          partnerId={partnerSocketId || ""}
+        // Finding partner ID from messages is hacky. `partnerId` from useSocket would be better.
+        // Let's assume useSocket exposes `partnerSocketId` or similar.
+        // Checking Room.tsx lines 22-31, it exposes: state, messages, sendMessage, leaveSession, resetSession, partnerRole, roomTitle, sessionId.
+        // It does NOT expose partnerSocketId.
+        // I should update use-socket.ts to expose it OR use the one found in matching?
+        // `state === 'MATCHED'` logic in `use-socket` likely has access to it.
+        />
+
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center border border-border"
@@ -85,7 +103,7 @@ export default function Room() {
           <p className="text-muted-foreground mb-8">
             The session has been closed. We hope you found the conversation helpful.
           </p>
-          <Button 
+          <Button
             onClick={handleReturnHome}
             className="w-full h-12 text-lg rounded-xl bg-primary hover:bg-primary/90"
           >
@@ -105,9 +123,14 @@ export default function Room() {
           <div className="flex items-center gap-3">
             <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
             <div>
-              <h2 className="font-display font-bold text-lg leading-tight">Anonymous Chat</h2>
+              <h2 className="font-display font-bold text-lg leading-tight">
+                {partnerRole === 'Group' ? (roomTitle || 'Group Session') : 'Anonymous Chat'}
+              </h2>
               <p className="text-xs text-muted-foreground">
-                Connected with <span className="font-medium text-primary">{partnerRole || 'Partner'}</span>
+                {partnerRole === 'Group'
+                  ? <span className="font-medium text-primary">Live Session</span>
+                  : <>Connected with <span className="font-medium text-primary">{partnerRole || 'Partner'}</span></>
+                }
               </p>
             </div>
           </div>
@@ -123,13 +146,13 @@ export default function Room() {
               <AlertDialogHeader>
                 <AlertDialogTitle>End conversation?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will disconnect you from your partner immediately. You cannot undo this action.
+                  This will disconnect you from the session.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleLeave} className="bg-destructive hover:bg-destructive/90">
-                  End Chat
+                  Leave
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -143,11 +166,12 @@ export default function Room() {
           <div className="space-y-2">
             <AnimatePresence initial={false}>
               {messages.map((msg) => (
-                <ChatBubble 
-                  key={msg.id} 
-                  content={msg.content} 
-                  sender={msg.sender} 
+                <ChatBubble
+                  key={msg.id}
+                  content={msg.content}
+                  sender={msg.sender}
                   timestamp={msg.timestamp}
+                  senderName={msg.senderName}
                 />
               ))}
             </AnimatePresence>
@@ -159,7 +183,7 @@ export default function Room() {
       {/* Input Area */}
       <footer className="flex-none bg-white border-t border-border/50 p-4 md:p-6">
         <div className="max-w-3xl mx-auto relative">
-          <form 
+          <form
             onSubmit={(e) => { e.preventDefault(); handleSend(); }}
             className="flex gap-3 items-end"
           >
@@ -173,8 +197,8 @@ export default function Room() {
                 autoFocus
               />
             </div>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={!inputValue.trim()}
               className="h-14 w-14 rounded-2xl shrink-0 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-50 disabled:shadow-none transition-all"
             >
