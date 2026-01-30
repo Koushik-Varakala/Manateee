@@ -10,6 +10,8 @@ import AuthPage from "@/pages/auth-page";
 import TherapistDirectory from "@/pages/TherapistDirectory";
 import TherapistProfile from "@/pages/TherapistProfile";
 import RecoveryDashboard from "@/pages/RecoveryDashboard";
+import GroupSessions from "@/pages/GroupSessions";
+import ChatSelection from "@/pages/ChatSelection";
 import { SocketProvider } from "@/lib/SocketContext";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route"; // Ensure this exists or use logic inside components
@@ -22,6 +24,9 @@ function Router() {
       <Route path="/room/:id" component={Room} />
       <Route path="/therapists" component={TherapistDirectory} />
       <Route path="/therapist/:id" component={TherapistProfile} />
+      <Route path="/therapist/:id" component={TherapistProfile} />
+      <Route path="/groups" component={GroupSessions} />
+      <Route path="/chat" component={ChatSelection} />
       <Route path="/recovery" component={RecoveryDashboard} />
       <Route component={NotFound} />
     </Switch>

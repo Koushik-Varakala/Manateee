@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+
 export default function RecoveryDashboard() {
     const { toast } = useToast();
     const { user, isLoading: authLoading } = useAuth();
@@ -52,125 +54,127 @@ export default function RecoveryDashboard() {
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-6xl space-y-8">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600">
-                        Recovery Community
-                    </h1>
-                    <p className="text-muted-foreground">
-                        Welcome back, <span className="font-semibold text-foreground">{profile?.pseudonym}</span>
-                    </p>
-                </div>
-                <Button variant="destructive" className="gap-2 shadow-lg hover:shadow-red-200">
-                    <ShieldAlert className="w-4 h-4" /> SOS: Emergency Support
-                </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Sobriety Clock */}
-                <Card className="col-span-1 border-teal-100 bg-gradient-to-br from-white to-teal-50/30">
-                    <CardHeader>
-                        <CardTitle className="flex justify-between items-center">
-                            Sobriety Clock
-                            <RefreshCw
-                                className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-red-500 transition-colors"
-                                onClick={() => {
-                                    if (confirm("Are you sure you want to reset your sobriety clock?")) {
-                                        resetMutation.mutate();
-                                    }
-                                }}
-                            />
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center py-8">
-                        <div className="text-4xl font-bold font-mono tracking-tight text-teal-700">
-                            {profile?.soberSince ? formatDistanceToNow(new Date(profile.soberSince)) : '0 days'}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-2">Sober Since</p>
-                    </CardContent>
-                </Card>
-
-                {/* Milestones / Coins */}
-                <Card className="col-span-1 md:col-span-2">
-                    <CardHeader><CardTitle>Milestones</CardTitle></CardHeader>
-                    <CardContent>
-                        <div className="flex gap-4 overflow-x-auto pb-2">
-                            {/* Mock Coins for now */}
-                            {['24h', '1w', '1m', '3m', '6m', '1y'].map((label, i) => (
-                                <div key={label} className={`flex flex-col items-center gap-2 min-w-[80px] opacity-${i < 2 ? '100' : '40'}`}>
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-200 to-amber-500 border-4 border-yellow-100 flex items-center justify-center shadow-lg">
-                                        <Award className="text-white w-8 h-8" />
-                                    </div>
-                                    <span className="text-xs font-bold">{label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Service Badge & Stats */}
-                <Card className="col-span-1 border-blue-100 bg-gradient-to-br from-white to-blue-50/30">
-                    <CardHeader>
-                        <CardTitle className="flex justify-between items-center">
-                            Service Rank
-                            <Badge variant="outline" className="bg-white/80">{profile?.badge || 'None'}</Badge>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center py-6 space-y-4">
-                        <div className="flex flex-col items-center">
-                            <div className={`w-20 h-20 rounded-full flex items-center justify-center border-4 shadow-xl mb-3 ${profile?.badge === 'Recovery Anchor' ? 'bg-purple-100 border-purple-200 text-purple-600' :
-                                profile?.badge === 'Consistent Companion' ? 'bg-blue-100 border-blue-200 text-blue-600' :
-                                    profile?.badge === 'Willing Heart' ? 'bg-teal-100 border-teal-200 text-teal-600' :
-                                        'bg-gray-50 border-gray-200 text-gray-400'
-                                }`}>
-                                <HeartHandshake className="w-10 h-10" />
-                            </div>
-                            <h3 className="font-semibold text-lg">{profile?.badge === 'None' ? 'New Member' : profile?.badge}</h3>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="bg-white/50 p-2 rounded-lg">
-                                <p className="text-muted-foreground text-xs uppercase tracking-wider">Sessions</p>
-                                <p className="font-bold text-lg">{profile?.stats?.count || 0}</p>
-                            </div>
-                            <div className="bg-white/50 p-2 rounded-lg">
-                                <p className="text-muted-foreground text-xs uppercase tracking-wider">Rating</p>
-                                <p className="font-bold text-lg">{profile?.stats?.average ? Number(profile.stats.average).toFixed(1) : '-'}</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground px-4">
-                            "Service is the rent we pay for the privilege of living on this earth."
+        <DashboardLayout>
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600">
+                            Recovery Community
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Welcome back, <span className="font-semibold text-foreground">{profile?.pseudonym}</span>
                         </p>
+                    </div>
+                    <Button variant="destructive" className="gap-2 shadow-lg hover:shadow-red-200">
+                        <ShieldAlert className="w-4 h-4" /> SOS: Emergency Support
+                    </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Sobriety Clock */}
+                    <Card className="col-span-1 border-teal-100 bg-gradient-to-br from-white to-teal-50/30">
+                        <CardHeader>
+                            <CardTitle className="flex justify-between items-center">
+                                Sobriety Clock
+                                <RefreshCw
+                                    className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-red-500 transition-colors"
+                                    onClick={() => {
+                                        if (confirm("Are you sure you want to reset your sobriety clock?")) {
+                                            resetMutation.mutate();
+                                        }
+                                    }}
+                                />
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="text-center py-8">
+                            <div className="text-4xl font-bold font-mono tracking-tight text-teal-700">
+                                {profile?.soberSince ? formatDistanceToNow(new Date(profile.soberSince)) : '0 days'}
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-2">Sober Since</p>
+                        </CardContent>
+                    </Card>
+
+                    {/* Milestones / Coins */}
+                    <Card className="col-span-1 md:col-span-2">
+                        <CardHeader><CardTitle>Milestones</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="flex gap-4 overflow-x-auto pb-2">
+                                {/* Mock Coins for now */}
+                                {['24h', '1w', '1m', '3m', '6m', '1y'].map((label, i) => (
+                                    <div key={label} className={`flex flex-col items-center gap-2 min-w-[80px] opacity-${i < 2 ? '100' : '40'}`}>
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-200 to-amber-500 border-4 border-yellow-100 flex items-center justify-center shadow-lg">
+                                            <Award className="text-white w-8 h-8" />
+                                        </div>
+                                        <span className="text-xs font-bold">{label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Service Badge & Stats */}
+                    <Card className="col-span-1 border-blue-100 bg-gradient-to-br from-white to-blue-50/30">
+                        <CardHeader>
+                            <CardTitle className="flex justify-between items-center">
+                                Service Rank
+                                <Badge variant="outline" className="bg-white/80">{profile?.badge || 'None'}</Badge>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="text-center py-6 space-y-4">
+                            <div className="flex flex-col items-center">
+                                <div className={`w-20 h-20 rounded-full flex items-center justify-center border-4 shadow-xl mb-3 ${profile?.badge === 'Recovery Anchor' ? 'bg-purple-100 border-purple-200 text-purple-600' :
+                                    profile?.badge === 'Consistent Companion' ? 'bg-blue-100 border-blue-200 text-blue-600' :
+                                        profile?.badge === 'Willing Heart' ? 'bg-teal-100 border-teal-200 text-teal-600' :
+                                            'bg-gray-50 border-gray-200 text-gray-400'
+                                    }`}>
+                                    <HeartHandshake className="w-10 h-10" />
+                                </div>
+                                <h3 className="font-semibold text-lg">{profile?.badge === 'None' ? 'New Member' : profile?.badge}</h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="bg-white/50 p-2 rounded-lg">
+                                    <p className="text-muted-foreground text-xs uppercase tracking-wider">Sessions</p>
+                                    <p className="font-bold text-lg">{profile?.stats?.count || 0}</p>
+                                </div>
+                                <div className="bg-white/50 p-2 rounded-lg">
+                                    <p className="text-muted-foreground text-xs uppercase tracking-wider">Rating</p>
+                                    <p className="font-bold text-lg">{profile?.stats?.average ? Number(profile.stats.average).toFixed(1) : '-'}</p>
+                                </div>
+                            </div>
+                            <p className="text-xs text-muted-foreground px-4">
+                                "Service is the rent we pay for the privilege of living on this earth."
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* 12-Step Tracker */}
+                <Card>
+                    <CardHeader><CardTitle>The 12 Steps</CardTitle></CardHeader>
+                    <CardContent>
+                        <ScrollArea className="h-[400px] pr-4">
+                            <div className="space-y-6">
+                                {[...Array(12)].map((_, i) => {
+                                    const stepNum = i + 1;
+                                    const stepData = steps?.find(s => s.stepNumber === stepNum);
+                                    const isComplete = stepData?.status === 'completed';
+
+                                    return (
+                                        <StepItem
+                                            key={stepNum}
+                                            num={stepNum}
+                                            data={stepData}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </ScrollArea>
                     </CardContent>
                 </Card>
             </div>
-
-            {/* 12-Step Tracker */}
-            <Card>
-                <CardHeader><CardTitle>The 12 Steps</CardTitle></CardHeader>
-                <CardContent>
-                    <ScrollArea className="h-[400px] pr-4">
-                        <div className="space-y-6">
-                            {[...Array(12)].map((_, i) => {
-                                const stepNum = i + 1;
-                                const stepData = steps?.find(s => s.stepNumber === stepNum);
-                                const isComplete = stepData?.status === 'completed';
-
-                                return (
-                                    <StepItem
-                                        key={stepNum}
-                                        num={stepNum}
-                                        data={stepData}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </ScrollArea>
-                </CardContent>
-            </Card>
-        </div>
+        </DashboardLayout>
     );
 }
 

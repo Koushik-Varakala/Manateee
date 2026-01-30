@@ -8,33 +8,7 @@ const execAsync = promisify(exec);
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
-const allowlist = [
-  "@google/generative-ai",
-  "axios",
-  "connect-pg-simple",
-  "cors",
-  "date-fns",
-  "drizzle-orm",
-  "drizzle-zod",
-  "express",
-  "express-rate-limit",
-  "express-session",
-  "jsonwebtoken",
-  "memorystore",
-  "multer",
-  "nanoid",
-  "nodemailer",
-  "openai",
-  "passport",
-  "passport-local",
-  "pg",
-  "stripe",
-  "uuid",
-  "ws",
-  "xlsx",
-  "zod",
-  "zod-validation-error",
-];
+// server deps are now all external to reliability
 
 async function buildAll() {
   await rm("dist", { recursive: true, force: true });
@@ -46,17 +20,30 @@ async function buildAll() {
   // Install and build moodist-main
   try {
     const { spawn } = await import("child_process");
-    await new Promise<void>((resolve, reject) => {
-      const p = spawn("sh", ["-c", "cd moodist-main && npm ci --include=dev --no-audit --prefer-offline && npm run build"], {
-        stdio: "inherit",
-        shell: true,
-      });
-      p.on("close", (code) => {
-        if (code === 0) resolve();
-        else reject(new Error(`Moodist build failed with code ${code}`));
-      });
-      p.on("error", reject);
+    const path = await import("path");
+    const moodistDir = path.resolve(process.cwd(), "moodist-main");
+
+    // Helper to spawn npm commands in correct directory
+    const runNpm = (args: string[]) => new Promise<void>((resolve, reject) => {
+        const p = spawn("npm", args, {
+            cwd: moodistDir,
+            stdio: "inherit",
+            shell: true,
+        });
+        p.on("close", (code) => {
+            if (code === 0) resolve();
+            else reject(new Error(`Command 'npm ${args.join(" ")}' failed with code ${code}`));
+        });
+        p.on("error", reject);
     });
+
+    console.log(`Installing moodist deps in ${moodistDir}...`);
+    // Use --no-audit and --prefer-offline to speed up
+    await runNpm(["ci", "--include=dev", "--no-audit", "--prefer-offline"]);
+
+    console.log(`Building moodist project...`);
+    await runNpm(["run", "build"]);
+
   } catch (err) {
     console.error("Failed to build moodist:", err);
     throw err;
@@ -68,7 +55,6 @@ async function buildAll() {
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.devDependencies || {}),
   ];
-  const externals = allDeps.filter((dep) => !allowlist.includes(dep));
 
   await esbuild({
     entryPoints: ["server/index.ts"],
@@ -80,7 +66,7 @@ async function buildAll() {
       "process.env.NODE_ENV": '"production"',
     },
     minify: true,
-    external: externals,
+    external: allDeps, // <--- Mark ALL dependencies as external
     logLevel: "info",
   });
 }
