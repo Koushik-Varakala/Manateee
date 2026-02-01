@@ -137,4 +137,4 @@ To run Manateee locally:
 Developed by **Koushik Varakala**.  
 Passionate about using technology to solve human problems.
 
-[LinkedIn]([https://linkedin.com/in/koushik-varakala](https://www.linkedin.com/in/koushik-varakala-8a0a1725b/)) | [GitHub](https://github.com/Koushik-Varakala)
+[LinkedIn](https://www.linkedin.com/in/koushik-varakala-8a0a1725b/) | [GitHub](https://github.com/Koushik-Varakala)
